@@ -46,8 +46,17 @@ public class ParkingSpotController {
     }
     @GetMapping("/{id}")
     public ResponseEntity<Object> findById(@PathVariable(value = "id") UUID uuid){
-        Optional<ParkingSpotModel> spotModel = parkingSpotService.findById(UUID.fromString(uuid.toString()));
+        Optional<ParkingSpotModel> spotModel = parkingSpotService.findById(uuid);
         return spotModel.<ResponseEntity<Object>>map(parkingSpotModel -> ResponseEntity.status(HttpStatus.OK).body(parkingSpotModel))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Parking Spot not found!"));
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object>  deleteParkingSpot(@PathVariable(value = "id") UUID uuid){
+        Optional<ParkingSpotModel> spotModel = parkingSpotService.findById(uuid);
+        if (spotModel.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Parking Spot not found!");
+        }
+        parkingSpotService.delete(spotModel.get());
+        return ResponseEntity.status(HttpStatus.OK).body("Parking Spot deleted successfully.");
     }
 }
